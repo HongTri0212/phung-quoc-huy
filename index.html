@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>⚡ TRẠM NĂNG LƯỢNG 19/11 - PHÙNG QUỐC HUY</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      background: #040914;
+      color: #fff;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* ================= TẦNG 1: TRẠM SẠC PIN QUÁ TẢI ================= */
+    #battery-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: radial-gradient(circle at center, #0b192c 0%, #030710 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .battery-shell {
+      width: 140px;
+      height: 230px;
+      border: 4px solid #00f5d4;
+      border-radius: 22px;
+      padding: 8px;
+      position: relative;
+      display: flex;
+      flex-direction: column-reverse;
+      box-shadow: 0 0 35px rgba(0, 245, 212, 0.35);
+      margin-bottom: 24px;
+      background: rgba(0, 245, 212, 0.05);
+    }
+
+    .battery-shell::before {
+      content: '';
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 54px;
+      height: 12px;
+      background: #00f5d4;
+      border-radius: 6px 6px 0 0;
+    }
+
+    #battery-liquid {
+      width: 100%;
+      height: 0%;
+      background: linear-gradient(180deg, #fee440, #00f5d4);
+      border-radius: 12px;
+      transition: height 0.12s ease, background 0.3s;
+      box-shadow: 0 0 25px rgba(0, 245, 212, 0.8);
+    }
+
+    #battery-percent {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.9rem;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+    }
+
+    .sys-tag {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      color: #00f5d4;
+      margin-bottom: 10px;
+    }
+
+    .target-title {
+      font-size: clamp(1.3rem, 3.8vw, 2rem);
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .charge-msg {
+      color: #94a3b8;
+      font-size: 0.98rem;
+      min-height: 24px;
+      margin-bottom: 22px;
+      font-weight: 600;
+    }
+
+    #detonate-btn {
+      display: none;
+      padding: 15px 32px;
+      border-radius: 50px;
+      border: 2px solid #fff;
+      background: linear-gradient(135deg, #fee440, #ff007f);
+      color: #040914;
+      font-weight: 900;
+      font-size: 1.05rem;
+      cursor: pointer;
+      box-shadow: 0 0 35px rgba(254, 228, 64, 0.85);
+      animation: pulseBtn 0.6s infinite alternate;
+    }
+
+    .overload-shake {
+      animation: shakeHard 0.14s infinite;
+    }
+
+    /* ================= TẦNG 2: SÂN KHẤU Ú ÒA ================= */
+    #flash-gold {
+      position: fixed;
+      inset: 0;
+      background: #fff8cc;
+      z-index: 1010;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.7s ease;
+    }
+
+    #fx-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    #surprise-stage {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+      background: radial-gradient(circle at center, rgba(16, 36, 68, 0.78) 0%, rgba(4, 9, 20, 0.96) 100%);
+      overflow-y: auto;
+    }
+
+    .uo-tag {
+      font-size: clamp(2.4rem, 6.5vw, 4.2rem);
+      font-weight: 900;
+      background: linear-gradient(45deg, #fee440, #00f5d4, #ff007f, #fee440);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: popIn 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275), gradientFlow 3s ease infinite;
+      margin-bottom: 4px;
+      filter: drop-shadow(0 0 22px rgba(254, 228, 64, 0.55));
+    }
+
+    .main-wish {
+      font-size: clamp(1.2rem, 3.2vw, 2rem);
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 16px;
+      letter-spacing: 0.8px;
+    }
+
+    .panel-box {
+      background: rgba(255, 255, 255, 0.07);
+      border: 2px solid rgba(0, 245, 212, 0.5);
+      backdrop-filter: blur(15px);
+      border-radius: 26px;
+      padding: 24px 26px;
+      max-width: 620px;
+      width: 100%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 35px rgba(0, 245, 212, 0.2);
+    }
+
+    /* Mini-game: Bấm nạp lõi năng lượng */
+    .bolt-icon {
+      font-size: 4.8rem;
+      cursor: pointer;
+      display: inline-block;
+      transition: transform 0.1s;
+      filter: drop-shadow(0 0 22px rgba(254, 228, 64, 0.85));
+    }
+
+    .bolt-icon:active {
+      transform: scale(0.85) rotate(12deg);
+    }
+
+    .charge-bar-bg {
+      width: 85%;
+      margin: 14px auto 10px;
+      height: 14px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #core-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #00f5d4, #fee440, #ff007f);
+      transition: width 0.15s ease;
+    }
+
+    #core-hint {
+      font-size: 0.95rem;
+      color: #fee440;
+      font-weight: 700;
+    }
+
+    /* Lời chúc & Quà xịn */
+    #wish-card {
+      display: none;
+      animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .wish-header {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: #00f5d4;
+      margin-bottom: 12px;
+    }
+
+    .wish-body {
+      background: rgba(0, 245, 212, 0.08);
+      border: 1.5px solid rgba(254, 228, 64, 0.55);
+      padding: 20px 18px;
+      border-radius: 18px;
+      font-size: clamp(0.96rem, 2.3vw, 1.1rem);
+      line-height: 1.78;
+      color: #f8fafc;
+      margin-bottom: 18px;
+      text-align: center;
+      box-shadow: inset 0 0 25px rgba(0, 245, 212, 0.12);
+    }
+
+    #vip-trophy {
+      display: none;
+      background: linear-gradient(135deg, rgba(254, 228, 64, 0.18), rgba(255, 0, 127, 0.18));
+      border: 1.5px solid #fee440;
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 16px;
+      font-size: 0.94rem;
+      line-height: 1.65;
+      animation: popIn 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      min-height: 48px;
+    }
+
+    .btn-main {
+      padding: 12px 22px;
+      border-radius: 50px;
+      border: none;
+      background: linear-gradient(90deg, #fee440, #00f5d4);
+      color: #040914;
+      font-weight: 900;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(0, 245, 212, 0.45);
+      transition: transform 0.2s;
+    }
+
+    .btn-dodge {
+      padding: 12px 22px;
+      border-radius: 50px;
+      border: 1.5px solid #ff007f;
+      background: rgba(255, 0, 127, 0.22);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .btn-main:hover {
+      transform: scale(1.05);
+    }
+
+    #dodge-note {
+      font-size: 0.84rem;
+      color: #fee440;
+      margin-top: 10px;
+      font-weight: 700;
+      min-height: 20px;
+    }
+
+    .falling-item {
+      position: fixed;
+      top: -40px;
+      font-size: 1.8rem;
+      z-index: 20;
+      pointer-events: none;
+      animation: fallDown linear forwards;
+    }
+
+    @keyframes fallDown {
+      to { transform: translateY(110vh) rotate(360deg); }
+    }
+    @keyframes pulseBtn {
+      from { transform: scale(1); }
+      to { transform: scale(1.08); }
+    }
+    @keyframes shakeHard {
+      0% { transform: translate(3px, 2px); }
+      50% { transform: translate(-3px, -2px); }
+      100% { transform: translate(2px, -3px); }
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.2); opacity: 0; }
+      80% { transform: scale(1.06); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+    @keyframes gradientFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="flash-gold"></div>
+
+  <!-- TẦNG 1: TRẠM SẠC NĂNG LƯỢNG QUÁ TẢI -->
+  <div id="battery-screen">
+    <div class="sys-tag">ENERGY CORE SCANNER • 19/11</div>
+    <div class="battery-shell">
+      <div id="battery-liquid"></div>
+      <div id="battery-percent">0%</div>
+    </div>
+
+    <div class="target-title">ĐỐI TƯỢNG: PHÙNG QUỐC HUY</div>
+    <div class="charge-msg" id="charge-msg">Đang kiểm tra mức năng lượng tích cực...</div>
+
+    <button id="detonate-btn" onclick="triggerEnergyBoom()">⚡ XẢ NĂNG LƯỢNG NGAY! ⚡</button>
+  </div>
+
+  <!-- TẦNG 2: SÂN KHẤU Ú ÒA -->
+  <canvas id="fx-canvas"></canvas>
+  <div id="surprise-stage">
+    <div class="uo-tag">🎉 Ú ÒA!! 💖</div>
+    <div class="main-wish">HAPPY MEN'S DAY 19/11<br>PHÙNG QUỐC HUY!</div>
+
+    <div class="panel-box">
+      <!-- Bước 1: Bấm nạp đầy lõi năng lượng -->
+      <div id="core-game">
+        <div class="bolt-icon" id="bolt-icon" onclick="chargeCore()">⚡</div>
+        <div class="charge-bar-bg">
+          <div id="core-fill"></div>
+        </div>
+        <div id="core-hint">Bấm liên tục vào tia sét để kích hoạt thông điệp 19/11! (0%)</div>
+      </div>
+
+      <!-- Bước 2: Lời chúc & Quà xịn -->
+      <div id="wish-card">
+        <div class="wish-header">💖 GỬI PHÙNG QUỐC HUY 💖</div>
+        <div class="wish-body" id="wish-text"></div>
+
+        <div id="vip-trophy">
+          <div style="color: #fee440; font-weight: 900; font-size: 1rem; margin-bottom: 6px;">
+            🏆 HUY CHƯƠNG NĂNG LƯỢNG 19/11 🏆
+          </div>
+          Chứng nhận <b>Phùng Quốc Huy</b> là chủ nhân của:<br>
+          <span style="color: #00f5d4; font-weight: 800;">"Nguồn Năng Lượng Tích Cực, Học Giỏi & Đỉnh Nhất Hệ Mặt Trời"</span><br>
+          Chúc ông một ngày 19/11 nhận thật nhiều quà xịn và tiếng cười nhaaa! 🎉💖
+        </div>
+
+        <div class="btn-group">
+          <button class="btn-main" onclick="launchFireworks()">🎆 Bắn Pháo Hoa</button>
+          <button class="btn-dodge" id="gift-btn" onclick="handleGiftDodge()">🎁 Mở Quà Xịn Cuối</button>
+        </div>
+        <div id="dodge-note"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ================= 1. SẠC PIN QUÁ TẢI TẦNG 1 ================= */
+    const liquid = document.getElementById('battery-liquid');
+    const percentText = document.getElementById('battery-percent');
+    const chargeMsg = document.getElementById('charge-msg');
+    const detonateBtn = document.getElementById('detonate-btn');
+    const batteryScreen = document.getElementById('battery-screen');
+
+    let p = 0;
+    const chargeTimer = setInterval(() => {
+      p += 12;
+      playSynth(300 + p * 1.5, 0.08);
+
+      if (p <= 100) {
+        liquid.style.height = p + '%';
+        percentText.textContent = p + '%';
+        if (p > 40) chargeMsg.textContent = "Đang nạp sự vui vẻ & may mắn cho Phùng Quốc Huy...";
+      } else if (p < 500) {
+        liquid.style.height = '100%';
+        liquid.style.background = 'linear-gradient(180deg, #ff007f, #fee440)';
+        percentText.textContent = p + '%';
+        percentText.style.color = '#ff007f';
+        chargeMsg.textContent = "⚠️ CẢNH BÁO: NĂNG LƯỢNG TÍCH CỰC QUÁ TẢI 500%!!";
+        chargeMsg.style.color = '#fee440';
+        batteryScreen.classList.add('overload-shake');
+      } else {
+        clearInterval(chargeTimer);
+        percentText.textContent = 'MAX!';
+        chargeMsg.textContent = "🔥 LÕI NĂNG LƯỢNG SẮP BÙNG NỔ! BẤM NÚT BÊN DƯỚI NGAY!";
+        detonateBtn.style.display = 'inline-block';
+      }
+    }, 140);
+
+    /* ================= 2. BÙNG NỔ "Ú ÒA!" ================= */
+    let boomed = false;
+    function triggerEnergyBoom() {
+      if (boomed) return;
+      boomed = true;
+
+      const flash = document.getElementById('flash-gold');
+      flash.style.opacity = '1';
+
+      setTimeout(() => {
+        batteryScreen.style.display = 'none';
+        document.getElementById('surprise-stage').style.display = 'flex';
+        flash.style.opacity = '0';
+        launchFireworks();
+        spawnRain();
+        playVictory();
+      }, 260);
+    }
+
+    /* ================= 3. NẠP LÕI & GÕ LỜI CHÚC ================= */
+    const fullWish = "💗 Chúc Phùng Quốc Huy ngày 19/11 thật vui vẻ và đáng nhớ nhaaa! Chúc Huy luôn mạnh khỏe, học giỏi, gặp nhiều may mắn và lúc nào cũng tràn đầy năng lượng tích cực. Mong Huy luôn vui vẻ, ngày càng thành công và đạt được mọi điều mình mong muốn. Chúc ông có một ngày thật nhiều niềm vui, quà xịn và thật nhiều tiếng cười nhaaa! 🎉💖";
+
+    let coreEnergy = 0;
+    function chargeCore() {
+      if (coreEnergy >= 100) return;
+      coreEnergy += 20;
+      playSynth(450 + coreEnergy * 4, 0.09);
+
+      const bolt = document.getElementById('bolt-icon');
+      bolt.style.transform = `scale(1.28) rotate(${(Math.random() - 0.5) * 30}deg)`;
+      setTimeout(() => bolt.style.transform = 'scale(1) rotate(0deg)', 110);
+
+      document.getElementById('core-fill').style.width = Math.min(coreEnergy, 100) + '%';
+
+      if (coreEnergy < 100) {
+        document.getElementById('core-hint').textContent = `Tiếp tục bấm nhanh nào! Đã nạp ${coreEnergy}% ⚡`;
+      } else {
+        document.getElementById('core-game').style.display = 'none';
+        document.getElementById('wish-card').style.display = 'block';
+        typeWish();
+        launchFireworks();
+        spawnRain();
+        playVictory();
+      }
+    }
+
+    function typeWish() {
+      const wishEl = document.getElementById('wish-text');
+      const charsArr = Array.from(fullWish);
+      let idx = 0;
+      const timer = setInterval(() => {
+        if (idx < charsArr.length) {
+          wishEl.textContent += charsArr[idx];
+          idx++;
+        } else {
+          clearInterval(timer);
+        }
+      }, 22);
+    }
+
+    /* ================= 4. NÚT QUÀ XỊN NÉ CHUỘT ================= */
+    let dodgeStep = 0;
+    function handleGiftDodge() {
+      const btn = document.getElementById('gift-btn');
+      const note = document.getElementById('dodge-note');
+
+      if (dodgeStep === 0) {
+        btn.style.transform = 'translate(55px, -10px)';
+        note.textContent = "Hụt rồi ông ơi! Nhanh tay thêm tí nữa 😜⚡";
+        playSynth(680, 0.1);
+        dodgeStep++;
+      } else if (dodgeStep === 1) {
+        btn.style.transform = 'translate(-55px, 9px)';
+        note.textContent = "Suýt trúng! Phát cuối là mở được quà xịn nè 😂";
+        playSynth(800, 0.1);
+        dodgeStep++;
+      } else {
+        btn.style.transform = 'translate(0, 0)';
+        btn.style.display = 'none';
+        note.textContent = "🎉 Ú ÒA! CHÚC PHÙNG QUỐC HUY 19/11 ĐỈNH CỦA CHÓP! 💖";
+        document.getElementById('vip-trophy').style.display = 'block';
+        launchFireworks();
+        spawnRain();
+        playVictory();
+      }
+    }
+
+    /* ================= 5. PHÁO HOA & MƯA ICON ================= */
+    const canvas = document.getElementById('fx-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    let sparks = [];
+    const colors = ['#fee440', '#00f5d4', '#ff007f', '#ffbe0b', '#3a86ff', '#ffffff'];
+
+    function spawnBurst(x, y) {
+      for (let i = 0; i < 80; i++) {
+        const angle = (Math.PI * 2 * i) / 80;
+        const speed = Math.random() * 6 + 2;
+        sparks.push({
+          x, y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          alpha: 1,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          size: Math.random() * 3.5 + 1.5
+        });
+      }
+    }
+
+    function launchFireworks() {
+      for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+          spawnBurst(
+            Math.random() * canvas.width * 0.8 + canvas.width * 0.1,
+            Math.random() * canvas.height * 0.5 + 60
+          );
+        }, i * 250);
+      }
+    }
+
+    function spawnRain() {
+      const icons = ['🎉', '💖', '⚡', '🏆', '🎂', '✨', '🔥'];
+      for (let i = 0; i < 25; i++) {
+        setTimeout(() => {
+          const el = document.createElement('div');
+          el.className = 'falling-item';
+          el.textContent = icons[Math.floor(Math.random() * icons.length)];
+          el.style.left = Math.random() * 95 + 'vw';
+          el.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
+          document.body.appendChild(el);
+          setTimeout(() => el.remove(), 4600);
+        }, i * 115);
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      sparks.forEach((s, i) => {
+        s.x += s.vx;
+        s.y += s.vy;
+        s.vy += 0.07;
+        s.alpha -= 0.014;
+        ctx.globalAlpha = Math.max(s.alpha, 0);
+        ctx.fillStyle = s.color;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fill();
+        if (s.alpha <= 0) sparks.splice(i, 1);
+      });
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    /* ================= 6. ÂM THANH ================= */
+    let audioCtx;
+    function initAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    function playSynth(freq, duration) {
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function playVictory() {
+      try {
+        initAudio();
+        const notes = [523.25, 659.25, 783.99, 1046.50, 880.00, 1046.50];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.14, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.4);
+          }, idx * 135);
+        });
+      } catch (e) {}
+    }
+  </script>
+</body>
+</html>
